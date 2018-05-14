@@ -1,0 +1,189 @@
+#+Title: Kolakoski sequence
+
+In mathematics, the Kolakoski sequence, sometimes also known as the
+Oldenburger-Kolakoski sequence,[1] is an infinite sequence of symbols
+{1,2} that is its own run-length encoding[2] and the prototype for an
+infinite family of related sequences. It was initially named after the
+recreational mathematician William Kolakoski (1944–97), who discussed
+it in 1965,[3] but subsequent research has revealed that it first
+appeared in a paper by Rufus Oldenburger in 1939.(Wikipedia) (https://en.wikipedia.org/wiki/Kolakoski_sequence)
+
+This is a Kolakoski sequence sound example using python and
+SuperCollider code.
+*** Python
+
+#+BEGIN_SRC python
+#
+#kolakoski seq
+# Builds the list l as it's being
+#iterated through.
+#For each entry x of l,
+#appends x copies of 1 or 2,
+#whichever is opposite
+#the current last element.
+
+import argparse
+import random
+import time
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
+
+client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
+
+l=[2, -2]
+##print(1,2)
+while True:
+
+    for x in l:
+        print(x);l+=x*[l[-1]^3]
+        client.send_message("/filter", x)
+        time.sleep(1)
+
+#+END_SRC
+
+
+*** SuperCollider
+
+#+BEGIN_SRC sclang
+s.waitForBoot{
+
+
+	
+	fork{
+		~bufferk = Buffer.read(s,  "/Users/sounds/kick03.wav"); //
+		//remember to free the buffer later.
+		~buffersn = Buffer.read(s,  "/Users/sounds/snare01Stereo.wav");
+		~bufferhi = Buffer.read(s,  "/Users/sounds/hihat01Stereo.wav");
+1.wait;
+SynthDef(\kick, {| out = 0, bufnum = 0, amp = 0.3, rate = 1, cutoff = 2000 |
+	var source;
+	source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+	source = LPF.ar(source, cutoff+2000);
+	    Out.ar(out, source*amp)
+}).add;
+
+0.5.wait;
+
+		SynthDef(\snare, {| out = 0, bufnum = 1, amp = 0.3, rate = 1, cutoff = 2000 |
+			var source;
+			source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+			source = LPF.ar(source, cutoff+2000);
+    Out.ar(out, source*amp)
+}).add;
+
+SynthDef(\hihat, {| out = 0, bufnum = 2, amp = 0.3, rate = 1, cutoff = 2000 |
+			var source;
+			source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+			source = LPF.ar(source, cutoff+2000);
+    Out.ar(out, source*amp)
+}).add;
+		
+		~kickx = Synth(\kick, [\out, 0, \bufnum, ~bufferk, \rate, 1]); 
+		1.wait;
+			~snarex = Synth(\snare, [\out, 0, \bufnum, ~buffersn, \rate, 1]);
+			1.wait;
+		~hihatx = Synth(\hihat, [\out, 0, \bufnum, ~bufferhi, \rate, 1]);
+
+1.wait;
+		OSCdef(\osctest,
+                    { | args |
+					
+						fork{
+							"rate and amp for kick:".postln;
+					 ~kickx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(3));
+							
+							1.wait;
+							"rate and amp for snare:".postln;
+							~snarex.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(2));
+							1.wait;
+										"rate and amp for hihat:".postln;
+					~hihatx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(4));
+						};
+    },
+                    '/filter'
+    );
+
+
+  };
+}
+
+#+END_SRC
+
+#+RESULTS:
+#+begin_example
+s.waitForBoot{
+
+	~tempo = TempoClock.new;// make a new TempoClock
+	//~tempo.sched(0, {Synth(\sinClock, [\freq, 330, \amp, 0.2]); 1}); //
+
+	~tempo.tempo_(2); // 120bpm - 2bps*60sec = 120bpm
+	
+	fork{
+		~bufferk = Buffer.read(s,  "/Users/vasilis/Documents/Projects/ProJects_Albums/SC/sounds_drums/drumsStereo/kick03.wav"); //
+		//remember to free the buffer later.
+		~buffersn = Buffer.read(s,  "/Users/vasilis/Documents/Projects/ProJects_Albums/SC/sounds_drums/drumsStereo/snare01Stereo.wav");
+		~bufferhi = Buffer.read(s,  "/Users/vasilis/Documents/Projects/ProJects_Albums/SC/sounds_drums/drumsStereo/hihat01Stereo.wav");
+1.wait;
+SynthDef(\kick, {| out = 0, bufnum = 0, amp = 0.3, rate = 1, cutoff = 2000 |
+	var source;
+	source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+	source = LPF.ar(source, cutoff+2000);
+	    Out.ar(out, source*amp)
+}).add;
+
+0.5.wait;
+
+		SynthDef(\snare, {| out = 0, bufnum = 1, amp = 0.3, rate = 1, cutoff = 2000 |
+			var source;
+			source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+			source = LPF.ar(source, cutoff+2000);
+    Out.ar(out, source*amp)
+}).add;
+
+SynthDef(\hihat, {| out = 0, bufnum = 2, amp = 0.3, rate = 1, cutoff = 2000 |
+			var source;
+			source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+			source = LPF.ar(source, cutoff+2000);
+    Out.ar(out, source*amp)
+}).add;
+		
+		~kickx = Synth(\kick, [\out, 0, \bufnum, ~bufferk, \rate, 1]); 
+		1.wait;
+			~snarex = Synth(\snare, [\out, 0, \bufnum, ~buffersn, \rate, 1]);
+			1.wait;
+		~hihatx = Synth(\hihat, [\out, 0, \bufnum, ~bufferhi, \rate, 1]);
+
+1.wait;
+		OSCdef(\osctest,
+                    { | args |
+						//args[1].postln;
+
+  //                 Pbind(\instrument, \test,
+  // "this is freq".postln;
+  //   \freq, args[1].round(0.01).postln,
+  // "this is vol".postln;
+  //   \amp, args[1].round(0.1).postln
+  //   ).play;
+
+//  if(args[1]==nil, { Pbind(\instrument, \test).stop},{nil});
+// if(args[1]>0.8, { x.free},{x.set(\freq, args[1].pow(2), \amp, args[1])});
+
+						fork{
+							"rate and amp for kick:".postln;
+					 ~kickx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(3));
+							
+							1.wait;
+							"rate and amp for snare:".postln;
+							~snarex.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(2));
+							1.wait;
+										"rate and amp for hihat:".postln;
+					~hihatx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(4));
+						};
+    },
+                    '/filter'
+    );
+
+
+  };
+}
+#+end_example
