@@ -29,8 +29,8 @@ from pythonosc import osc_message_builder
 from pythonosc import udp_client
 
 client = udp_client.SimpleUDPClient("127.0.0.1", 57120)
-
-l=[2, -2]
+l=[1, 2]
+#l=[2, -2] #test with other numbers as well
 ##print(1,2)
 while True:
 
