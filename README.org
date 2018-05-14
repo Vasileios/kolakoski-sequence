@@ -15,7 +15,7 @@ Dependencies: python-osc
 
 *** Python
 
-#+BEGIN_SRC python
+#+BEGIN_EXAMPLE
 #
 #kolakoski seq
 # Builds the list l as it's being
@@ -42,21 +42,23 @@ while True:
         client.send_message("/filter", x)
         time.sleep(1)
 
-#+END_SRC
+#+END_EXAMPLE
 
 
 *** SuperCollider
 
-#+BEGIN_SRC sclang
+#+BEGIN_EXAMPLE
+
 s.waitForBoot{
 
 
-	
+
 	fork{
 		~bufferk = Buffer.read(s,  "/Users/sounds/kick03.wav"); //
 		//remember to free the buffer later.
 		~buffersn = Buffer.read(s,  "/Users/sounds/snare01Stereo.wav");
 		~bufferhi = Buffer.read(s,  "/Users/sounds/hihat01Stereo.wav");
+
 1.wait;
 SynthDef(\kick, {| out = 0, bufnum = 0, amp = 0.3, rate = 1, cutoff = 2000 |
 	var source;
@@ -67,43 +69,43 @@ SynthDef(\kick, {| out = 0, bufnum = 0, amp = 0.3, rate = 1, cutoff = 2000 |
 
 0.5.wait;
 
-		SynthDef(\snare, {| out = 0, bufnum = 1, amp = 0.3, rate = 1, cutoff = 2000 |
-			var source;
-			source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
-			source = LPF.ar(source, cutoff+2000);
+SynthDef(\snare, {| out = 0, bufnum = 1, amp = 0.3, rate = 1, cutoff = 2000 |
+var source;
+source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+source = LPF.ar(source, cutoff+2000);
     Out.ar(out, source*amp)
 }).add;
 
 SynthDef(\hihat, {| out = 0, bufnum = 2, amp = 0.3, rate = 1, cutoff = 2000 |
-			var source;
-			source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
-			source = LPF.ar(source, cutoff+2000);
+var source;
+source =  PlayBuf.ar(2, bufnum, BufRateScale.kr(bufnum)*rate, doneAction:2, loop:1);
+source = LPF.ar(source, cutoff+2000);
     Out.ar(out, source*amp)
 }).add;
-		
-		~kickx = Synth(\kick, [\out, 0, \bufnum, ~bufferk, \rate, 1]); 
-		1.wait;
-			~snarex = Synth(\snare, [\out, 0, \bufnum, ~buffersn, \rate, 1]);
-			1.wait;
-		~hihatx = Synth(\hihat, [\out, 0, \bufnum, ~bufferhi, \rate, 1]);
+
+~kickx = Synth(\kick, [\out, 0, \bufnum, ~bufferk, \rate, 1]);
+1.wait;
+~snarex = Synth(\snare, [\out, 0, \bufnum, ~buffersn, \rate, 1]);
+1.wait;
+~hihatx = Synth(\hihat, [\out, 0, \bufnum, ~bufferhi, \rate, 1]);
 
 1.wait;
-		OSCdef(\osctest,
-                    { | args |
-					
-						fork{
-							"rate and amp for kick:".postln;
-					 ~kickx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(3));
-							
-							1.wait;
-							"rate and amp for snare:".postln;
+
+OSCdef(\osctest,
+      { | args |
+
+					fork{
+				"rate and amp for kick:".postln;
+				 ~kickx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(3));
+				1.wait;
+				"rate and amp for snare:".postln;
 							~snarex.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(2));
-							1.wait;
-										"rate and amp for hihat:".postln;
-					~hihatx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(4));
+				1.wait;
+				"rate and amp for hihat:".postln;
+				~hihatx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(4));
 						};
     },
-                    '/filter'
+    '/filter'
     );
 
 
@@ -120,7 +122,7 @@ s.waitForBoot{
 	//~tempo.sched(0, {Synth(\sinClock, [\freq, 330, \amp, 0.2]); 1}); //
 
 	~tempo.tempo_(2); // 120bpm - 2bps*60sec = 120bpm
-	
+
 	fork{
 		~bufferk = Buffer.read(s,  "/Users/vasilis/Documents/Projects/ProJects_Albums/SC/sounds_drums/drumsStereo/kick03.wav"); //
 		//remember to free the buffer later.
@@ -149,8 +151,8 @@ SynthDef(\hihat, {| out = 0, bufnum = 2, amp = 0.3, rate = 1, cutoff = 2000 |
 			source = LPF.ar(source, cutoff+2000);
     Out.ar(out, source*amp)
 }).add;
-		
-		~kickx = Synth(\kick, [\out, 0, \bufnum, ~bufferk, \rate, 1]); 
+
+		~kickx = Synth(\kick, [\out, 0, \bufnum, ~bufferk, \rate, 1]);
 		1.wait;
 			~snarex = Synth(\snare, [\out, 0, \bufnum, ~buffersn, \rate, 1]);
 			1.wait;
@@ -174,7 +176,7 @@ SynthDef(\hihat, {| out = 0, bufnum = 2, amp = 0.3, rate = 1, cutoff = 2000 |
 						fork{
 							"rate and amp for kick:".postln;
 					 ~kickx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(3));
-							
+
 							1.wait;
 							"rate and amp for snare:".postln;
 							~snarex.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(2));
