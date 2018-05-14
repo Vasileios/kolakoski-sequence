@@ -54,10 +54,10 @@ s.waitForBoot{
 
 
 	fork{
-		~bufferk = Buffer.read(s,  "/Users/sounds/kick03.wav"); //
+~bufferk = Buffer.read(s,  "/Users/sounds/kick03.wav"); //
 		//remember to free the buffer later.
-		~buffersn = Buffer.read(s,  "/Users/sounds/snare01Stereo.wav");
-		~bufferhi = Buffer.read(s,  "/Users/sounds/hihat01Stereo.wav");
+~buffersn = Buffer.read(s,  "/Users/sounds/snare01Stereo.wav");
+~bufferhi = Buffer.read(s,  "/Users/sounds/hihat01Stereo.wav");
 
 1.wait;
 SynthDef(\kick, {| out = 0, bufnum = 0, amp = 0.3, rate = 1, cutoff = 2000 |
@@ -99,7 +99,7 @@ OSCdef(\osctest,
 				 ~kickx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(3));
 				1.wait;
 				"rate and amp for snare:".postln;
-							~snarex.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(2));
+				~snarex.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(2));
 				1.wait;
 				"rate and amp for hihat:".postln;
 				~hihatx.setn(\rate, args[1].postln, \amp, args[1].reciprocal.postln, \cutoff, args[1].pow(4));
