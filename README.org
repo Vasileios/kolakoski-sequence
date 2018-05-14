@@ -8,8 +8,11 @@ recreational mathematician William Kolakoski (1944–97), who discussed
 it in 1965,[3] but subsequent research has revealed that it first
 appeared in a paper by Rufus Oldenburger in 1939.(Wikipedia) (https://en.wikipedia.org/wiki/Kolakoski_sequence)
 
-This is a Kolakoski sequence sound example using python and
+This is a Kolakoski sequence sound example using Python3 and
 SuperCollider code.
+
+Dependencies: python-osc
+
 *** Python
 
 #+BEGIN_SRC python
